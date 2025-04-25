@@ -1,0 +1,104 @@
+{% extends "base.html" %}
+
+{% block title %}Contact Me{% endblock %}
+
+{% block content %}
+<style>
+    .contact-container {
+        max-width: 700px;
+        margin: 0 auto;
+        padding: 80px 20px;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    .contact-title {
+        text-align: center;
+        font-size: 42px;
+        margin-bottom: 40px;
+        font-weight: bold;
+    }
+
+    .question {
+        font-size: 22px;
+        font-weight: 600;
+        color: #222;
+        margin-bottom: 12px;
+    }
+
+    .answer {
+        font-size: 18px;
+        color: #555;
+        margin-bottom: 40px;
+    }
+
+    form {
+        display: flex;
+        flex-direction: column;
+    }
+
+    label {
+        margin-bottom: 8px;
+        font-weight: bold;
+    }
+
+    input, textarea {
+        margin-bottom: 20px;
+        padding: 12px;
+        font-size: 16px;
+        border: 1px solid #ccc;
+        border-radius: 6px;
+    }
+
+    button {
+        padding: 12px;
+        font-size: 16px;
+        background-color: black;
+        color: white;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+        font-weight: bold;
+        transition: background-color 0.3s ease;
+    }
+
+    button:hover {
+        background-color: #333;
+    }
+
+    .thank-you {
+        margin-top: 30px;
+        font-size: 18px;
+        color: green;
+        text-align: center;
+    }
+</style>
+
+<div class="contact-container">
+    <div class="contact-title">Contact Me</div>
+
+    <div class="question">📨 Can I reach out to you?</div>
+    <div class="answer">
+        Sure! Fill in the form below and I’ll get back to you as soon as I can.
+    </div>
+
+    <form action="/contact" method="POST">
+        <label for="name">Your Name</label>
+        <input type="text" name="name" id="name" required>
+
+        <label for="email">Your Email</label>
+        <input type="email" name="email" id="email">
+
+        <label for="message">Your Message</label>
+        <textarea name="message" id="message" rows="5" required></textarea>
+
+        <button type="submit">Send Message</button>
+        <button onclick="window.location.href='/'" style="background-color: none; color: white; padding: 10px; margin-top: 20px;">Get Back</button>
+    </form>
+
+    {% if submitted %}
+    <div class="thank-you">
+        ✅ Thank you for your message! I’ll get back to you soon.
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

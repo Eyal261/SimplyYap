@@ -1,0 +1,113 @@
+{% extends "base.html" %}
+
+{% block title %}About{% endblock %}
+
+{% block content %}
+<style>
+    .about-container {
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 80px 20px;
+        text-align: left;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    .about-title {
+        text-align: center;
+        font-size: 42px;
+        margin-bottom: 40px;
+        font-weight: bold;
+    }
+
+    .qa-block {
+        margin-bottom: 30px;
+    }
+
+    .question {
+        font-size: 22px;
+        font-weight: 600;
+        color: #222;
+        margin-bottom: 8px;
+    }
+
+    .answer {
+        font-size: 18px;
+        color: #555;
+        line-height: 1.6;
+    }
+
+    .github-link {
+        display: inline-block;
+        margin-top: 10px;
+        padding: 10px 20px;
+        background-color: black;
+        color: white;
+        text-decoration: none;
+        border-radius: 6px;
+        font-weight: bold;
+        transition: background-color 0.3s ease;
+    }
+
+    .github-link:hover {
+        background-color: #333;
+    }
+
+    .go-back-button:hover {
+        background-color: #333;
+    }
+
+    .go-back-button {
+        background-color: black;
+        color: white;
+        padding: 10px, 20px;
+        border-radius: 6px;
+        font-weight: bold;
+        transition: background-color 0.3s ease;
+        cursor: pointer;
+        text-decoration: none;
+        display: inline-block;
+        font-size: 18px;
+        border: none;
+        text-align: center;
+        width: 200px;
+        height: 50px;
+        margin-top: 10px;
+
+    }
+</style>
+
+<div class="about-container">
+    <div class="about-title">About This Project</div>
+
+    <div class="qa-block">
+        <div class="question">🧑‍💻 Who made this awesome site?</div>
+        <div class="answer">This app was created entirly by Eyal Raifler as part of a high school computer science final project.</div>
+    </div>
+
+    <div class="qa-block">
+        <div class="question">🎯 What is this project for?</div>
+        <div class="answer">I chose to make a chat application because of all the different topics it covers. I wanted to improve my skills in backend, frontend, database and networking, and this project was the perfect opportunity to do so.</div>
+    </div>
+
+    <div class="qa-block">
+        <div class="question">📦 Damn cool site! Can I see the code?</div>
+        <div class="answer">
+            Absolutely! The full source code is available here:
+            <br>
+            <a class="github-link" href="https://github.com/your-username/your-repo" target="_blank">View on GitHub</a>
+        </div>
+    </div>
+
+    <div class="qa-block">
+        <div class="question">📱 Does it work on phones?</div>
+        <div class="answer">Yes! The entire site is mobile responsive — built to look clean and function well on all screen sizes.</div>
+    </div>
+
+    <div class="qa-block">
+        <div class="question">📚 What technologies did you use?</div>
+        <div class="answer">Flask (Python), HTML, CSS, JavaScript, and a MySQL database for storing messages and users.</div>
+        <button class="go-back-button"onclick="window.location.href='/'">Go back to the main page</button> 
+    </div>
+
+</div>
+{% endblock %}

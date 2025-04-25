@@ -1,0 +1,390 @@
+{% extends "base.html" %}
+
+{% block title %}Chat App - Home{% endblock %}
+
+
+{% block content %}
+
+<style>
+
+body {
+        min-height: 100vh;
+        margin: 0;
+        padding: 0;
+    }
+
+    .signup-wrapper {
+        max-width: 1000px;
+        height: 100%;
+        margin: 20px auto;
+        display: flex;
+        align-items: stretch;
+        gap: 0px;
+        background: white;
+        overflow: hidden;
+        border-radius: 16px;
+        font-family: 'Segoe UI', sans-serif;
+        
+    }
+
+    .signup-image {
+        flex: 1;
+        height: 100%;
+        display: flex;
+        align-items: strech;
+    }
+
+    .signup-image img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+        border-top-left-radius: 16px;
+        border-bottom-left-radius: 16px;    
+    }
+
+    .signup-container {
+        flex: 1;
+        max-width: 500px;
+        background-color: white;
+        padding: 40px;
+        border-top-right-radius: 16px;
+        border-bottom-right-radius: 16px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+    }
+
+    .signup-container h2 {
+        margin-bottom: 30px;
+        font-size: 28px;
+        font-weight: bold;
+        color: #444;
+        text-align: center;
+    }
+
+    .signup-container input {
+        width: 100%;
+        padding: 14px;
+        margin-bottom: 18px;
+        border: 1px solid #ccc;
+        border-radius: 10px;
+        font-size: 15px;
+        background-color: #f9f9f9;
+        transition: all 0.3s ease;
+    }
+
+    #password-container:has(input:focus) {
+    border: 1px solid #6C63FF;
+    background-color: #fff;
+    box-shadow: 0 0 5px rgba(108, 99, 255, 0.4);
+    border-radius: 10px;
+}
+
+    .signup-container button {
+        width: 100%;
+        padding: 14px;
+        background: linear-gradient(to right, #4CB8C4, #6C63FF);
+        color: white;
+        font-weight: bold;
+        border: none;
+        border-radius: 10px;
+        font-size: 16px;
+        cursor: pointer;
+        transition: opacity 0.3s ease;
+    }
+
+    .signup-container button:hover {
+        opacity: 0.9;
+    }
+
+    #signup-result {
+        margin-top: 15px;
+        color: red;
+        font-weight: 500;
+        text-align: center;
+    }
+
+    @media (max-width: 768px) {
+        .signup-wrapper {
+            flex-direction: column;
+        }
+
+        .signup-image {
+            padding: 0 0 30px 0;
+        }
+    }
+
+
+    .modal.show {
+        position: fixed;
+        top: 0; left: 0;
+        width: 100vw; height: 100vh;
+        z-index: 9999;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+        animation: fadeIn 0.3s ease;
+    }
+
+    .modal.hide {
+        animation: fadeOut 0.3s ease;
+    }
+
+    .modal-backdrop {
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.3); /* Less dark */
+        backdrop-filter: blur(2px); /* Less blur */
+        z-index: 0;
+    }
+
+    .modal-content.show {
+        position: relative;
+        z-index: 1;
+        animation: slideUp 0.3s ease;
+    }
+
+    .modal-content.hide {
+        animation: slideDown 0.3s ease;
+    }
+
+    .close-btn {
+        position: absolute;
+        top: 16px;
+        right: 20px;
+        font-size: 24px;
+        font-weight: bold;
+        cursor: pointer;
+        color: #aaa;
+        transition: color 0.2s;
+    }
+    .close-btn:hover {
+        color: #333;
+    }
+
+
+    .input-container-in-signup {
+        display: flex;
+        align-items: center;               /* Center vertically */
+        background-color: white;
+        border: 1px solid #ccc;
+        border-radius: 10px;
+        padding: 0px 0px;
+        margin-bottom: 18px;
+        height: 54px;                      /* << KEY: fixes the container height */
+        transition: all 0.3s ease;
+    }
+
+    .input-container-in-signup input {
+        margin: auto 0;
+        flex: 1;
+        padding: 0px 16px;                /* Added left padding */
+        border: none;
+        font-size: 17px;
+        background-color: transparent;
+        outline: none;
+        height: 100%;
+        line-height: 1.2;                 /* Helps placeholder stay aligned */
+        display: block;                   /* Changed from flex */
+    }
+
+    .input-container-in-signup img {
+        width: 22px;
+        height: 22px;
+        cursor: pointer;
+        margin-right: 16px;               /* Added right margin for spacing */
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; } to { opacity: 1; }
+    }
+
+    @keyframes slideUp {
+        from { transform: translateY(30px); opacity: 0; }
+        to { transform: translateY(0); opacity: 1; }
+    }
+
+    @keyframes slideDown {
+        from { transform: translateY(0); opacity: 1; }
+        to { transform: translateY(30px); opacity: 0; }
+    }
+
+    @keyframes fadeOut {
+        from { opacity: 1; } to { opacity: 0; }
+    }
+
+
+
+    @media (min-width: 768px) {
+    body.modal-open {
+            padding-right: 15px; /* Add padding only on wider screens */
+        }
+    }
+    
+
+    
+</style>
+
+
+
+<!-- NAV BAR -->
+<div style="display: flex; align-items: center; justify-content: space-between; padding: 20px 40px; background-color: white; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
+    <img src="{{ url_for('static', filename='logo.png') }}" alt="SimplyYap Logo" style="height: 50px;">
+    <div>
+        <button onclick="window.location.href='/about'" style="background: none; border: none; color: #111827; padding: 10px 16px; font-weight: 500; cursor: pointer;">About</button>
+        <button onclick="window.location.href='/contact'" style="background: none; border: none; color: #111827; padding: 10px 16px; font-weight: 500; cursor: pointer;">Contact</button>
+        <button onclick="openSignup()" style="background-color: #4F46E5; color: white; padding: 10px 20px; margin-left: 10px; border-radius: 6px; font-weight: bold; border: none; cursor: pointer;">Sign Up</button>
+        <button onclick="window.location.href='/login'" style="border: 2px solid #4F46E5; color: #4F46E5; padding: 10px 20px; margin-left: 10px; border-radius: 6px; font-weight: bold; background: none; cursor: pointer;">Sign In</button>
+    </div>
+</div>
+
+<!-- HERO SECTION -->
+<section style="display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 100px 20px; text-align: center;">
+    <h1 style="font-size: 3.5rem; font-weight: 800; color: black; margin-bottom: 20px;">Connect instantly. Stay forever.</h1>
+    <p style="font-size: 1.25rem; color: black; margin-bottom: 40px;">Private chats, shared groups, all in one place.</p>
+    <div>
+        <button onclick="openSignup()" style="background-color: #4F46E5; color: white; padding: 14px 28px; margin: 0 10px; border-radius: 8px; font-weight: bold; font-size: 1rem; cursor: pointer;">Sign Up Free</button>
+        <button onclick="window.location.href='/login'" style="border: 2px solid #4F46E5; color: #4F46E5; padding: 14px 28px; margin: 0 10px; border-radius: 8px; font-weight: bold; font-size: 1rem; background: none; cursor: pointer;">Log In</button>
+    </div>
+</section>
+
+<!-- SIGNUP FORM -->
+<div id="signupModal" class="modal" style="display: none;">
+    <div class="modal-backdrop"></div>
+    <div class="modal-content signup-wrapper">
+        <div class="signup-image">
+            <img src="{{ url_for('static', filename='signup-image.png')}}" alt="Signup Illustration">
+        </div>
+
+        <div class="signup-container">
+            <span class="close-btn" onclick="closeSignup()">×</span>
+            <h2>Create an Account</h2>
+            <form id="signup-form">
+                <div class="input-container-in-signup">
+                <input type="text" id="signup-username" placeholder="Enter Username" required>
+                <img src="{{ url_for('static', filename='username-icon.png') }}" alt="Username Icon" id="username-icon">
+                </div>
+                <div class="input-container-in-signup">
+                <input type="email" id="signup-email" placeholder="Enter Email" required>
+                <img src="{{ url_for('static', filename='email-icon.webp') }}" alt="Email Icon" id="email-icon">
+                </div>
+                <div class="input-container-in-signup">
+                    <input type="password" id="signup-password" placeholder="Enter Password" required>
+                    <img src="{{ url_for('static', filename='closed-eye-for-password.png') }}" alt="Eye Icon" id="closed-eye-icon" onclick="togglePassword()">
+                </div>
+                <button type="submit">Sign Up</button>
+            </form>
+            <div id="signup-result"></div>
+        </div>
+    </div>
+</div>
+
+<!-- FEATURE SECTION -->
+<section style="padding: 80px 20px; text-align: center;">
+    <h2 style="font-size: 2.5rem; font-weight: bold; color: #111827; margin-bottom: 40px;">Why SimplyYap?</h2>
+    <div style="display: flex; justify-content: center; gap: 40px; flex-wrap: wrap; max-width: 1000px; margin: 0 auto;">
+        <div style="flex: 1; min-width: 250px;">
+            <div style="font-size: 40px; color: #4F46E5;">💬</div>
+            <h3 style="font-size: 1.5rem; font-weight: bold; margin: 10px 0;">Real-Time Chat</h3>
+            <p style="color: #6B7280;">Stay in sync with friends and groups using blazing-fast WebSockets.</p>
+        </div>
+        <div style="flex: 1; min-width: 250px;">
+            <div style="font-size: 40px; color: #4F46E5;">🔐</div>
+            <h3 style="font-size: 1.5rem; font-weight: bold; margin: 10px 0;">Secure & Private</h3>
+            <p style="color: #6B7280;">We don’t sell your data. Your messages stay between you and your group.</p>
+        </div>
+        <div style="flex: 1; min-width: 250px;">
+            <div style="font-size: 40px; color: #4F46E5;">📱</div>
+            <h3 style="font-size: 1.5rem; font-weight: bold; margin: 10px 0;">Mobile-Ready</h3>
+            <p style="color: #6B7280;">Use it on your phone or desktop. Responsive design for all devices.</p>
+        </div>
+    </div>
+</section>
+
+
+{% endblock %}
+
+
+{% block scripts %}
+<script>
+    // SIGNUP FORM
+
+    function openSignup() {
+        const modal = document.getElementById("signupModal");
+        const content = modal.querySelector(".modal-content");
+
+        modal.classList.remove("hide");
+        content.classList.remove("hide");
+
+        modal.classList.add("show");
+        content.classList.add("show");
+
+        modal.style.display = "flex";
+        document.body.style.overflow = "hidden";
+
+        document.body.classList.add("modal-open");
+
+    }
+
+    function closeSignup() {
+        const modal = document.getElementById("signupModal");
+        const content = modal.querySelector(".modal-content");
+
+        modal.classList.remove("show");
+        content.classList.remove("show");
+
+        modal.classList.add("hide");
+        content.classList.add("hide");
+
+        setTimeout(() => {
+            modal.style.display = "none";
+            document.body.classList.remove("modal-open");
+            document.body.style.overflow = "";
+        }, 300);
+    }
+
+
+    document.addEventListener("keydown", function(e) {
+        if (e.key === "Escape") {
+            closeSignup();
+        }
+    });
+
+    document.getElementById("signup-form").addEventListener("submit", async function(e) {
+            e.preventDefault();
+            const res = await fetch("/signup", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    username: document.getElementById("signup-username").value,
+                    email: document.getElementById("signup-email").value,
+                    password: document.getElementById("signup-password").value
+                })
+            });
+            const result = await res.json();
+
+            if (res.ok) {
+                window.location.href = "/chat";
+            } else {
+                document.getElementById("signup-result").innerText = result.error || "Signup failed";
+            }
+
+        });
+
+
+        function togglePassword() {
+            const passwordInput = document.getElementById("signup-password");
+            const eyeIcon = document.getElementById("closed-eye-icon");
+
+            if (passwordInput.type === "password") {
+                passwordInput.type = "text";
+                eyeIcon.src = "{{ url_for('static', filename='open-eye-for-password.png') }}";
+            } else {
+                passwordInput.type = "password";
+                eyeIcon.src = "{{ url_for('static', filename='closed-eye-for-password.png') }}";
+            }
+        }
+</script>
+
+
+{% endblock %}

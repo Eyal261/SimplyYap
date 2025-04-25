@@ -1,0 +1,6 @@
+{
+  "dependencies": {
+    "@picmo/popup-picker": "^5.8.5",
+    "picmo": "^5.8.5"
+  }
+}

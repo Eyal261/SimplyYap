@@ -1,0 +1,21 @@
+# Node modules
+node_modules/
+
+# Python cache
+__pycache__/
+*.py[cod]
+
+# Virtual environment
+venv/
+
+# Environment file
+.env
+
+# Uploaded user files
+uploads/
+common/
+
+# OS and editor files
+.DS_Store
+Thumbs.db
+.vscode/

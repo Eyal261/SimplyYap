@@ -1,0 +1,58 @@
+<style>
+    body {
+        background-color: #1a1a1a;
+        color: #ff5c5c;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        margin: 0;
+        text-align: center;
+    }
+
+    h1 {
+        font-size: 6rem;
+        margin: 0;
+        animation: flicker 2s infinite;
+    }
+
+    p {
+        font-size: 1.5rem;
+        margin: 20px 0;
+    }
+
+    a {
+        display: inline-block;
+        padding: 12px 24px;
+        border: 2px solid #ff5c5c;
+        color: #ff5c5c;
+        text-decoration: none;
+        font-weight: bold;
+        border-radius: 8px;
+        transition: background-color 0.3s ease;
+    }
+
+    a:hover {
+        background-color: #ff5c5c;
+        color: #1a1a1a;
+    }
+
+    @keyframes flicker {
+        0%, 100% { opacity: 1; }
+        50% { opacity: 0.6; }
+    }
+</style>
+
+{% extends "base.html"}
+
+{% block title %}Simply Yap - 500{% endblock %}
+
+{% block content %}
+<h1>500</h1>
+<p>Whoops! Something went wrong on our end.</p>
+<a href="/">Try Again or Go Home</a>
+{% endblock %}
+
+

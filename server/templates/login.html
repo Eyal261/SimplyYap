@@ -1,0 +1,90 @@
+{% extends "base.html" %}
+
+{% block title %}Chat App - Login{% endblock %}
+
+{% block content %}
+<style>
+    .login-container {
+        max-width: 400px;
+        margin: 100px auto;
+        padding: 40px;
+        background-color: #f9f9f9;
+        box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+        border-radius: 12px;
+        text-align: center;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+
+    }
+
+    .login-container h2 {
+        margin-bottom: 30px;
+        font-size: 32px;
+        font-weight: bold;
+    }
+
+    .login-container input {
+        width: 100%;
+        padding: 12px;
+        margin-bottom: 20px;
+        border: 1px solid #ccc;
+        border-radius: 8px;
+        font-size: 16px;
+    }
+
+    .login-container button {
+        width: 100%;
+        padding: 12px;
+        background-color: black;
+        color: white;
+        font-weight: bold;
+        border: none;
+        border-radius: 8px;
+        font-size: 16px;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+    }
+
+    .login-container button:hover {
+        background-color: #333;
+    }
+
+    #login-result {
+        margin-top: 15px;
+        color: red;
+        font-weight: 500;
+    }
+
+
+</style>
+<div class="login-container">
+<h2>Login</h2>
+<form id="login-form">
+    Username: <input type="text" id="login-username"><br>
+    Password: <input type="password" id="login-password"><br>
+    <button type="submit">Log In</button>
+</form>
+<div id="login-result"></div>
+</div>
+
+<script>
+    // Login handler
+    document.getElementById("login-form").addEventListener("submit", async function(e) {
+        e.preventDefault();
+        const res = await fetch("/login", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                username: document.getElementById("login-username").value,
+                password: document.getElementById("login-password").value
+            })
+        });
+        const result = await res.json();
+
+        if (result.message === "Login successful") {
+            window.location.href = "/chat";
+        } else {
+            document.getElementById("login-result").innerText = result.error || "Login failed";
+        }
+    });
+</script>
+{% endblock %}

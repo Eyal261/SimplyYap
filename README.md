@@ -1,117 +1,95 @@
-# 💬 Chat Project – Secure Web Chat System
+# Chat Project – Secure Web Chat System
 
-A full-stack, secure, real-time web chat system inspired by WhatsApp. Built as a final Cyber Security project by Eyal Raifler (11th grade, De-Shalit High School, Rehovot, Israel), the system supports private and group messaging, media uploads, and anonymous guest access.
+## Final Project – 11th Grade Cyber Security
 
----
-
-## 🚀 Features
-
-### 🔐 Authentication
-- User registration and login with password verification
-- Guest access (no signup required)
-
-### 💬 Messaging
-- Real-time messaging with WebSockets
-- Private and group chats
-- Automatic chat refresh without page reload
-- Chat history stored in a database
-
-### 📁 Media
-- Upload and share images and voice messages
-- Media preview in chat window
-
-### 🧠 AI Assistant (Coming Soon)
-- Optional built-in assistant to help with phrasing and more
-
-### 📱 UI/UX
-- Clean responsive web interface (works on desktop & mobile)
-- Single page layout (like WhatsApp)
+Author: Eyal Raifler
+School: De-Shalit High School, Rehovot, Israel
 
 ---
 
-## 🛠️ Tech Stack
+### Project Overview
 
-| Layer        |  Tools / Languages                         |
-|--------------|--------------------------------------------|
-| Frontend     | HTML, CSS, JavaScript                      |
-| Backend      | Python, Flask, Flask-SocketIO              |
-| Database     | MySQL (accessed via mysql-connector)       |
-| Hosting/Test | VS Code, Chrome, Terminal, MySQL Workbench |
+This is a full-stack, secure, real-time web chat application inspired by WhatsApp. It supports user authentication, group and private messaging, media sharing, and a clean, responsive interface. The project was developed as a final cyber security assignment and demonstrates secure communication, database management, and real-time interaction via WebSockets.
 
 ---
 
-## 🗃️ File Structure
+### Features
 
-```
-chat_project/
-├── client/
-│   ├── index.html
-│   ├── css/
-│   ├── js/
-│   └── media/
-├── server/
-│   ├── app.py
-│   ├── auth.py
-│   ├── chat.py
-│   ├── socket_handler.py
-│   ├── db/
-│   └── uploads/
-├── database/
-│   ├── schema.sql
-│   └── seed.sql
-├── tests/
-├── .env
-├── requirements.txt
-├── README.md
-└── run.py
-```
+#### Authentication
+
+* User registration and login
+* Guest access without sign-up
+
+#### Messaging
+
+* Real-time text communication via WebSockets
+* Private and group chats
+* Persistent chat history in a MySQL database
+
+#### Media Sharing
+
+* Support for image and file uploads
+* Media preview in chat
+
+#### Interface
+
+* Responsive design for both desktop and mobile
+* Single-page chat experience
 
 ---
 
-## ⚙️ Setup Instructions
+### Technologies Used
 
-1. **Clone the repo**  
+| Layer       | Technologies                          |
+| ----------- | ------------------------------------- |
+| Frontend    | HTML, CSS, JavaScript                 |
+| Backend     | Python (Flask, Flask-SocketIO)        |
+| Database    | MySQL (with `mysql-connector-python`) |
+| Development | VS Code, Chrome, MySQL Workbench      |
+
+---
+
+### Setup Instructions
+
+1. **Clone the repository**
+
    ```bash
    git clone https://github.com/your-username/chat_project.git
    cd chat_project
    ```
 
-2. **Install Python packages**  
+2. **Install dependencies**
+
    ```bash
    pip install -r requirements.txt
    ```
 
-3. **Configure MySQL DB**
-   - Create the schema using `database/schema.sql`
-   - Add test data if needed with `seed.sql`
+3. **Configure the database**
 
-4. **Run the server**
+   * Create schema using `database/schema.sql`
+   * Optionally load sample data with `database/seed.sql`
+
+4. **Start the server**
+
    ```bash
    python run.py
    ```
 
-5. **Open `client/index.html` in your browser**  
-   (Or serve it through Flask if integrating frontend in backend)
+5. **Access the chat app**
+   Open in your browser: `http://127.0.0.1:5000`
 
 ---
 
-## 🛡️ Security Measures
+### Security Considerations
 
-- SQL Injection prevention (parameterized queries)
-- XSS protection (user input is sanitized)
-- Password storage (to be encrypted)
-- Access control for admin features
-
----
-
-## 👤 Author
-
-**Eyal Raifler**  
-11th Grade | De-Shalit High School, Rehovot, Israel 
-Cyber Security Final Project – 2025
+* SQL injection prevention using parameterized queries
+* Basic XSS protection (input sanitation)
+* Planned implementation of hashed password storage
+* Access control mechanisms for group management
 
 ---
 
-## 📚 License
+### License
 
-This project is for educational purposes only.
+This project is licensed under the MIT License.  
+See the [LICENSE](LICENSE) file for more details.

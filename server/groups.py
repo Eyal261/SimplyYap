@@ -81,5 +81,19 @@ def is_user_in_group(group_id: int, user_id: int):
     return result[0] > 0
 
 
+def get_group_members(group_id: int):
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    cursor.execute(
+        """
+        SELECT u.user_id, u.username, gm.is_admin 
+        FROM group_members gm
+        JOIN users u ON gm.user_id = u.user_id
+        WHERE gm.group_id = %s
+    """, (group_id,)
+    )
+    members = cursor.fetchall()
+    conn.close()
+    return members
 
 

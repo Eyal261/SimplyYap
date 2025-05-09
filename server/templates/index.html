@@ -262,15 +262,15 @@ body {
             <form id="signup-form">
                 <div class="input-container-in-signup">
                 <input type="text" id="signup-username" placeholder="Enter Username" required>
-                <img src="{{ url_for('static', filename='username-icon.png') }}" alt="Username Icon" id="username-icon">
+                <img src="{{ url_for('static', filename='icons/username-icon.png') }}" alt="Username Icon" id="username-icon">
                 </div>
                 <div class="input-container-in-signup">
                 <input type="email" id="signup-email" placeholder="Enter Email" required>
-                <img src="{{ url_for('static', filename='email-icon.webp') }}" alt="Email Icon" id="email-icon">
+                <img src="{{ url_for('static', filename='icons/email-icon.webp') }}" alt="Email Icon" id="email-icon">
                 </div>
                 <div class="input-container-in-signup">
                     <input type="password" id="signup-password" placeholder="Enter Password" required>
-                    <img src="{{ url_for('static', filename='closed-eye-for-password.png') }}" alt="Eye Icon" id="closed-eye-icon" onclick="togglePassword()">
+                    <img src="{{ url_for('static', filename='icons/closed-eye-for-password.png') }}" alt="Eye Icon" id="closed-eye-icon" onclick="togglePassword()">
                 </div>
                 <button type="submit">Sign Up</button>
             </form>
@@ -364,7 +364,7 @@ body {
             const result = await res.json();
 
             if (res.ok) {
-                window.location.href = "/chat";
+                window.location.href = "/profile_pic";
             } else {
                 document.getElementById("signup-result").innerText = result.error || "Signup failed";
             }
@@ -378,10 +378,10 @@ body {
 
             if (passwordInput.type === "password") {
                 passwordInput.type = "text";
-                eyeIcon.src = "{{ url_for('static', filename='open-eye-for-password.png') }}";
+                eyeIcon.src = "{{ url_for('static', filename='icons/open-eye-for-password.png') }}";
             } else {
                 passwordInput.type = "password";
-                eyeIcon.src = "{{ url_for('static', filename='closed-eye-for-password.png') }}";
+                eyeIcon.src = "{{ url_for('static', filename='icons/closed-eye-for-password.png') }}";
             }
         }
 </script>

@@ -204,17 +204,34 @@
     }
 
 
+    .user-avatar {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-right: 10px;
+}
+.chat-header {
+    display: flex;
+    align-items: center;
+    padding: 10px;
+    background: #f0f0f0;
+    border-bottom: 1px solid #ddd;
+}
+
+
     
 </style>
 <div id="chat-container">
     <!-- Sidebar -->
     <div id="group-sidebar">
+      <img class="user-avatar" src="{{ url_for('static', filename=profile_picture) }}" alt="Profile">
       <button onclick="createGroup()">Create Group</button>
       <button onclick="joinGroup()">Join Group</button>
       <div class="search-container">
         <input type="text" id="group-search" placeholder="Search groups...">
         <span class="search-icon">
-          <img src="{{ url_for('static', filename='search-icon.png') }}" alt="Search">
+          <img src="{{ url_for('static', filename='icons/search-icon.png') }}" alt="Search">
         </span>
       </div>
       
@@ -231,7 +248,10 @@
         <button id="make_admin">Make Admin</button>
         <button id="remove_admin">Remove Admin</button>
         <button id="add_member">Add Member</button>
-        <button id="remove_member">Remove Member</button>        
+        <button id="remove_member">Remove Member</button>  
+        <button id="show_group_members" onclick="toggleGroupMembersPopup(event)">Show Members</button>  
+        <div id="group-members-popup" style="display:none; position:absolute; background:white; border:1px solid #ccc; padding:10px; border-radius:5px;"></div>
+    
       </div>
 
       <div id="chat"></div>
@@ -251,10 +271,10 @@
 
 
       <button id="emoji-button">
-        <img src="{{ url_for('static', filename='emoji-icon.webp')}}">
+        <img src="{{ url_for('static', filename='icons/emoji-icon.webp')}}">
       </button>
       <button id="sendBtn">
-        <img src="{{ url_for('static', filename='send-message-icon.png')}}">
+        <img src="{{ url_for('static', filename='icons/send-message-icon.png')}}">
       </button>
       </div>
     </div>
@@ -533,6 +553,62 @@
       });
       document.getElementById('fileInput').value = "";
     }
+
+
+    function showGroupMembers() {
+    fetch('/return_all_group_members', {
+        method: 'POST',
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({group_id: currentGroup})
+    })
+    .then(res => {
+        if (!res.ok) {
+            throw new Error('Network response was not ok');
+        }
+        return res.json();
+    })
+    .then(data => {
+        const popup = document.getElementById("group-members-popup");
+        popup.innerHTML = "";  // Clear old content
+
+        const members = data["Group_members: "];
+        members.forEach(member => {
+            const item = document.createElement("div");
+            item.textContent = `${member[1]}${member[2] ? ' (Admin)' : ''}`;
+            popup.appendChild(item);
+        });
+
+        popup.style.display = "block";  // Show the popup
+    })
+    .catch(error => {
+        console.error('Error fetching members:', error);
+    });
+}
+
+
+
+    function toggleGroupMembersPopup(event) {
+      const popup = document.getElementById("group-members-popup");
+      if (popup.style.display === "block") {
+          popup.style.display = "none";
+          return;
+      }
+
+      // Position near the button
+      const rect = event.target.getBoundingClientRect();
+      popup.style.top = `${rect.bottom + window.scrollY}px`;
+      popup.style.left = `${rect.left + window.scrollX}px`;
+
+      showGroupMembers();
+  }
+
+  document.addEventListener('click', function(event) {
+    const popup = document.getElementById("group-members-popup");
+    if (!popup.contains(event.target) && !document.getElementById("show_group_members").contains(event.target)) {
+        popup.style.display = "none";
+    }
+  });
+
 
 
 

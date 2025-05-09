@@ -4,13 +4,13 @@ from datetime import datetime
 from werkzeug.security import generate_password_hash, check_password_hash
 
 
-def create_user(username:str, password: str, email: str):
+def create_user(username:str, password: str, email: str, profile_image: str = None):
     password_hash = generate_password_hash(password)
     conn = get_db_connection()
     cursor = conn.cursor()
     cursor.execute(
         "INSERT INTO users (username, password_hash, email, created_at) VALUES (%s, %s, %s, %s)",
-        (username, password_hash, email, datetime.now())
+        (username, password_hash, email, datetime.now() )
     )
     conn.commit()
     user_id = cursor.lastrowid
@@ -35,5 +35,16 @@ def verify_password(username: str, password: str):
     if user and check_password_hash(user.password_hash, password):
         return user
     return False
+
+def update_user_profile_picture(user_id: int, image_path: str):
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    cursor.execute(
+        "UPDATE users SET profile_image = %s WHERE user_id = %s",
+        (image_path, user_id)
+    )
+    conn.commit()
+    conn.close()
+
 
 

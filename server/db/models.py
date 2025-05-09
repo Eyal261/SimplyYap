@@ -1,12 +1,13 @@
 from datetime import datetime
 
 class User:
-    def __init__(self, user_id: int, username: str, password_hash: str, email: str, created_at: datetime):
+    def __init__(self, user_id: int, username: str, password_hash: str, email: str, created_at: datetime, profile_image: str = None):
         self.user_id = user_id
         self.username = username
         self.password_hash = password_hash
         self.email = email
         self.created_at = created_at
+        self.profile_picture = profile_image  # Placeholder for profile picture URL or path
     
     def __repr__(self):
         return f"User(id: {self.user_id}, name: {self.username}, password: {self.password_hash}, email: {self.email}, created at: {self.created_at})"

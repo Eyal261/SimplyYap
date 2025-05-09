@@ -1,9 +1,9 @@
 from flask import Flask, request, jsonify, render_template, redirect, session
-from users import create_user, verify_password
+from users import create_user, verify_password, update_user_profile_picture
 from flask_socketio import SocketIO, send, join_room, leave_room, emit
 import threading
 import webbrowser
-from groups import get_user_groups, create_group, add_user_to_group, remove_user_from_group, is_user_in_group
+from groups import get_user_groups, create_group, add_user_to_group, remove_user_from_group, is_user_in_group, get_group_members
 from chat import save_message, get_messages_for_group
 import os
 from werkzeug.utils import secure_filename
@@ -95,13 +95,68 @@ def handle_group_data(data):
     emit('group_message', data, to=str(group_id))
 
 
+
+@app.route('/profile_pic', methods=['GET', 'POST'])
+def profile_pic():
+    user_id = session.get('user_id')
+    username = session.get('username')
+
+    if not user_id:
+        return redirect('/login')
+
+    if request.method == 'POST':
+        image_choice = request.form.get('image_choice')
+
+        if image_choice and image_choice.startswith('profile_pic'):
+            image_path = f'default_profile_pictures/{image_choice}'
+
+        elif image_choice == 'upload' and 'custom_image' in request.files:
+            file = request.files['custom_image']
+            if file and file.filename.strip() != '':
+                filename = secure_filename(file.filename)
+                timestamp = int(time.time())
+                unique_filename = f"user_{user_id}_{timestamp}_{filename}"
+
+                upload_folder = os.path.join(basedir, "static", "uploaded_profile_pictures")
+                os.makedirs(upload_folder, exist_ok=True)
+
+                save_path = os.path.join(upload_folder, unique_filename)
+                file.save(save_path)
+
+                image_path = f"uploaded_profile_pictures/{unique_filename}"  # ✅ Relative to /static
+            else:
+                return "No file uploaded", 400
+        else:
+            return "Invalid image selection", 400
+
+        # Save to database
+        try:
+            update_user_profile_picture(user_id, image_path)
+            session['profile_picture'] = image_path  # Update session with new profile picture path
+        except Exception as e:
+            return jsonify({"error": str(e)}), 500
+
+        return redirect('/chat')
+
+    return render_template('profile_pic.html', username=username, user_id=user_id)
+
+
+    
+    
+    
+
+
 @app.route('/chat')
 def chat():
     username = session.get('username')
     user_id = session.get('user_id')
+    print("----------------------------------------------------")
+    print(f"User ID: {user_id}, Username: {username}, Profile Picture: {session.get('profile_picture')}")
+    profile_picture = session.get('profile_picture') or 'default_profile_pictures/profile_pic1.png'
+    
     if not username:
         return redirect('/login')
-    return render_template('chat.html', username=username, user_id=user_id)
+    return render_template('chat.html', username=username, user_id=user_id, profile_picture=profile_picture)
 
 @app.route('/about')
 def about():
@@ -206,6 +261,15 @@ def upload_file():
 
     return jsonify({'error': 'No file part'}), 400
 
+
+@app.route('/return_all_group_members', methods=['POST'])
+def return_all_group_members():
+    if not session.get('user_id'):
+        return jsonify({"error": "User not logged in"}), 401
+    data = request.json
+    group_id = data.get('group_id')
+    user_id = session.get('user_id')
+    return jsonify({"Group_members: ": get_group_members(group_id)})
 
 
 if __name__ == '__main__':

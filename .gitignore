@@ -19,3 +19,11 @@ common/
 .DS_Store
 Thumbs.db
 .vscode/
+
+
+# Uploaded profile pictures (ignore files, keep folder)
+server/static/uploaded_profile_pictures/*
+!server/static/uploaded_profile_pictures/.gitignore
+
+# Temporary files created by the IDE
+tempCodeRunnerFile.py

@@ -597,6 +597,19 @@
         const fixedPath = contentValue.replace(/\\/g, '/');
         const fileName = data.file_name || fixedPath.split('/').pop();
         content.innerHTML = `<a href="${fixedPath}" download="${fileName}" target="_blank" style="color: blue; text-decoration: underline;">📄 ${fileName}</a>`;
+    } else if (messageType === 'video') {
+      const fixedPath = contentValue.replace(/\\/g, '/');
+      content.innerHTML = `<video controls style="max-width: 200px; border-radius: 8px;">
+                            <source src="${fixedPath}" type="video/mp4">
+                            Your browser does not support the video tag.
+                          </video>`;
+      } else if (messageType === 'audio') {
+        const fixedPath = contentValue.replace(/\\/g, '/');
+        content.innerHTML = `<audio controls style="max-width: 200px; border-radius: 8px;">
+                              <source src="${fixedPath}" type="audio/mpeg">
+                              Your browser does not support the audio tag.
+                            </audio>`;
+
       } else {
         content.textContent = contentValue;
     }

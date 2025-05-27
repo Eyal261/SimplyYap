@@ -8,6 +8,7 @@ from chat import save_message, get_messages_for_group
 import os
 from werkzeug.utils import secure_filename
 import time
+from mailer import send_contact_mail
 
 
 app = Flask(__name__)
@@ -168,9 +169,12 @@ def contact():
         name = request.form["name"]
         email = request.form["email"]
         message = request.form["message"]
-        print(f"Name: {name}, Email: {email}, Message: {message}")
+        send_contact_mail(name, email, message)
+
         return render_template('contact.html', submitted=True)
     return render_template('contact.html', submitted=False)
+
+
 
 @app.route('/groups', methods=['GET'])
 def my_groups():
@@ -270,6 +274,10 @@ def return_all_group_members():
     group_id = data.get('group_id')
     user_id = session.get('user_id')
     return jsonify({"Group_members: ": get_group_members(group_id)})
+
+
+
+
 
 
 if __name__ == '__main__':

@@ -301,27 +301,73 @@
 }
 
 .modal-content {
-  background-color: white;
-  margin: 15% auto;
-  padding: 20px;
-  width: 300px;
-  border-radius: 10px;
+  background-color: #ffffff;
+  padding: 30px 20px;
+  width: 320px;
+  border-radius: 20px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
   text-align: center;
+  font-family: 'Segoe UI', sans-serif;
+  margin: 15% auto;
 }
+
+.modal-content h2 {
+  color: #1a1a1a;
+  font-size: 22px;
+  margin-bottom: 20px;
+}
+
 
 .modal-content input {
   width: 90%;
-  padding: 8px;
-  margin: 10px 0;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  font-size: 14px;
+  outline: none;
+  transition: border 0.3s;
+}
+
+.modal-content input:focus {
+  border-color: #5b7cff;
 }
 
 .modal-buttons {
   display: flex;
   justify-content: space-between;
-  padding: 0 10px;
+  margin-top: 20px;
+  padding: 0 5px;
+  gap: 10px;
 }
 
+.modal-buttons button {
+  flex: 1;
+  padding: 10px;
+  border: none;
+  border-radius: 12px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+}
 
+#groupCreateButton {
+  background-color: #5b7cff;
+  color: white;
+  box-shadow: 0 4px 8px rgba(91, 124, 255, 0.4);
+}
+
+#groupCreateButton:hover {
+  background-color: #4664e4;
+}
+
+#groupCacelButton {
+  background-color: #f0f0f0;
+  color: #333;
+}
+
+#groupCacelButton:hover {
+  background-color: #e0e0e0;
+}
 
     
 </style>
@@ -409,8 +455,8 @@
     <h2>Create a New Group</h2>
     <input type="text" id="groupNameInput" placeholder="Enter group name">
     <div class="modal-buttons">
-      <button onclick="submitGroupName()">Create</button>
-      <button onclick="closeGroupModal()">Cancel</button>
+      <button onclick="submitGroupName()" id="groupCreateButton">Create</button>
+      <button onclick="closeGroupModal()" id="groupCacelButton">Cancel</button>
     </div>
   </div>
 </div>
@@ -444,6 +490,8 @@
             }
             socket.emit("group_message",message);
             input.value = "";
+            input.style.height = 'auto'; // reset height of input box
+
         }
     };
 
@@ -626,7 +674,7 @@
     function createGroup() {
       document.getElementById('groupModal').style.display = 'block';
       document.body.style.overflow = 'hidden'; // Prevent background scrolling
-      document.getElementById('groupNameInput').value() = ''; //clear previous input
+      document.getElementById('groupNameInput').value = ''; //clear previous input
       document.getElementById('groupNameInput').focus();
     }
 

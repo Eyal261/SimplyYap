@@ -13,7 +13,7 @@ body {
         padding: 0;
     }
 
-    .signup-wrapper {
+    .signup-wrapper, .signin-wrapper {
         max-width: 1000px;
         height: 100%;
         margin: 20px auto;
@@ -27,14 +27,14 @@ body {
         
     }
 
-    .signup-image {
+    .signup-image, .signin-image {
         flex: 1;
         height: 100%;
         display: flex;
         align-items: strech;
     }
 
-    .signup-image img {
+    .signup-image img, .signin-image img {
         width: 100%;
         height: 100%;
         object-fit: cover;
@@ -43,7 +43,7 @@ body {
         border-bottom-left-radius: 16px;    
     }
 
-    .signup-container {
+    .signup-container, .signin-container {
         flex: 1;
         max-width: 500px;
         background-color: white;
@@ -53,7 +53,7 @@ body {
         box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
     }
 
-    .signup-container h2 {
+    .signup-container h2, .signin-container h2 {
         margin-bottom: 30px;
         font-size: 28px;
         font-weight: bold;
@@ -61,7 +61,7 @@ body {
         text-align: center;
     }
 
-    .signup-container input {
+    .signup-container input, .signin-container input {
         width: 100%;
         padding: 14px;
         margin-bottom: 18px;
@@ -79,7 +79,7 @@ body {
     border-radius: 10px;
 }
 
-    .signup-container button {
+    .signup-container button, .signin-container button {
         width: 100%;
         padding: 14px;
         background: linear-gradient(to right, #4CB8C4, #6C63FF);
@@ -92,25 +92,15 @@ body {
         transition: opacity 0.3s ease;
     }
 
-    .signup-container button:hover {
+    .signup-container button:hover, .signin-container button:hover {
         opacity: 0.9;
     }
 
-    #signup-result {
+    #signup-result, #signin-result {
         margin-top: 15px;
         color: red;
         font-weight: 500;
         text-align: center;
-    }
-
-    @media (max-width: 768px) {
-        .signup-wrapper {
-            flex-direction: column;
-        }
-
-        .signup-image {
-            padding: 0 0 30px 0;
-        }
     }
 
 
@@ -138,15 +128,18 @@ body {
         z-index: 0;
     }
 
-    .modal-content.show {
+    .signup-modal-content.show, .signin-modal-content.show {
         position: relative;
         z-index: 1;
         animation: slideUp 0.3s ease;
     }
 
-    .modal-content.hide {
+    .signup-modal-content.hide, .signin-modal-content.hide {
         animation: slideDown 0.3s ease;
     }
+
+
+
 
     .close-btn {
         position: absolute;
@@ -163,7 +156,7 @@ body {
     }
 
 
-    .input-container-in-signup {
+    .input-container-in-signup, .input-container-in-signin {
         display: flex;
         align-items: center;               /* Center vertically */
         background-color: white;
@@ -175,7 +168,7 @@ body {
         transition: all 0.3s ease;
     }
 
-    .input-container-in-signup input {
+    .input-container-in-signup input, .input-container-in-signin input {
         margin: auto 0;
         flex: 1;
         padding: 0px 16px;                /* Added left padding */
@@ -188,7 +181,7 @@ body {
         display: block;                   /* Changed from flex */
     }
 
-    .input-container-in-signup img {
+    .input-container-in-signup img, .input-container-in-signin img {
         width: 22px;
         height: 22px;
         cursor: pointer;
@@ -214,13 +207,15 @@ body {
     }
 
 
-
-    @media (min-width: 768px) {
-    body.modal-open {
-            padding-right: 15px; /* Add padding only on wider screens */
-        }
+    .nav-link {
+        background: none;
+        border: none;
+        color: #111827;
+        padding: 10px 16px;
+        font-weight: 500;
+        cursor: pointer;
+        text-decoration: none;
     }
-    
 
     
 </style>
@@ -231,10 +226,10 @@ body {
 <div style="display: flex; align-items: center; justify-content: space-between; padding: 20px 40px; background-color: white; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
     <img src="{{ url_for('static', filename='logo.png') }}" alt="SimplyYap Logo" style="height: 50px;">
     <div>
-        <button onclick="window.location.href='/about'" style="background: none; border: none; color: #111827; padding: 10px 16px; font-weight: 500; cursor: pointer;">About</button>
-        <button onclick="window.location.href='/contact'" style="background: none; border: none; color: #111827; padding: 10px 16px; font-weight: 500; cursor: pointer;">Contact</button>
+        <a href="/about" class="nav-link">About</a>
+        <a href="/contact" class="nav-link">Contact</a>
         <button onclick="openSignup()" style="background-color: #4F46E5; color: white; padding: 10px 20px; margin-left: 10px; border-radius: 6px; font-weight: bold; border: none; cursor: pointer;">Sign Up</button>
-        <button onclick="window.location.href='/login'" style="border: 2px solid #4F46E5; color: #4F46E5; padding: 10px 20px; margin-left: 10px; border-radius: 6px; font-weight: bold; background: none; cursor: pointer;">Sign In</button>
+        <button onclick="openSignin()" style="border: 2px solid #4F46E5; color: #4F46E5; padding: 10px 20px; margin-left: 10px; border-radius: 6px; font-weight: bold; background: none; cursor: pointer;">Sign In</button>
     </div>
 </div>
 
@@ -244,16 +239,16 @@ body {
     <p style="font-size: 1.25rem; color: black; margin-bottom: 40px;">Private chats, shared groups, all in one place.</p>
     <div>
         <button onclick="openSignup()" style="background-color: #4F46E5; color: white; padding: 14px 28px; margin: 0 10px; border-radius: 8px; font-weight: bold; font-size: 1rem; cursor: pointer;">Sign Up Free</button>
-        <button onclick="window.location.href='/login'" style="border: 2px solid #4F46E5; color: #4F46E5; padding: 14px 28px; margin: 0 10px; border-radius: 8px; font-weight: bold; font-size: 1rem; background: none; cursor: pointer;">Log In</button>
+        <button onclick="openSignin()" style="border: 2px solid #4F46E5; color: #4F46E5; padding: 14px 28px; margin: 0 10px; border-radius: 8px; font-weight: bold; font-size: 1rem; background: none; cursor: pointer;">Sign In</button>
     </div>
 </section>
 
 <!-- SIGNUP FORM -->
 <div id="signupModal" class="modal" style="display: none;">
     <div class="modal-backdrop"></div>
-    <div class="modal-content signup-wrapper">
-        <div class="signup-image">
-            <img src="{{ url_for('static', filename='signup-image.png')}}" alt="Signup Illustration">
+    <div class="signup-modal-content signup-wrapper">
+        <div class="signin-image">
+            <img src="{{ url_for('static', filename='signin-image.png')}}" alt="Signup Illustration">
         </div>
 
         <div class="signup-container">
@@ -262,7 +257,7 @@ body {
             <form id="signup-form">
                 <div class="input-container-in-signup">
                 <input type="text" id="signup-username" placeholder="Enter Username" required>
-                <img src="{{ url_for('static', filename='icons/username-icon.png') }}" alt="Username Icon" id="username-icon">
+                <img src="{{ url_for('static', filename='icons/username-icon.png') }}" alt="Username Icon">
                 </div>
                 <div class="input-container-in-signup">
                 <input type="email" id="signup-email" placeholder="Enter Email" required>
@@ -270,11 +265,38 @@ body {
                 </div>
                 <div class="input-container-in-signup">
                     <input type="password" id="signup-password" placeholder="Enter Password" required>
-                    <img src="{{ url_for('static', filename='icons/closed-eye-for-password.png') }}" alt="Eye Icon" id="closed-eye-icon" onclick="togglePassword()">
+                    <img src="{{ url_for('static', filename='icons/closed-eye-for-password.png') }}" alt="Eye Icon" id="signup-eye-icon" onclick="togglePassword('signup')">
                 </div>
                 <button type="submit">Sign Up</button>
             </form>
             <div id="signup-result"></div>
+        </div>
+    </div>
+</div>
+
+<!-- SIGNIN FORM -->
+<div id="signinModal" class="modal" style="display: none;">
+    <div class="modal-backdrop"></div>
+    <div class="signin-modal-content signin-wrapper">
+        <div class="signup-image">
+            <img src="{{ url_for('static', filename='signup-image.png')}}" alt="Signup Illustration">
+        </div>
+
+        <div class="signin-container">
+            <span class="close-btn" onclick="closeSignin()">×</span>
+            <h2>Welcome Back</h2>
+            <form id="signin-form">
+                <div class="input-container-in-signin">
+                <input type="text" id="signin-username" placeholder="Enter Username" required>
+                <img src="{{ url_for('static', filename='icons/username-icon.png') }}" alt="Username Icon">
+                </div>
+                <div class="input-container-in-signin">
+                    <input type="password" id="signin-password" placeholder="Enter Password" required>
+                    <img src="{{ url_for('static', filename='icons/closed-eye-for-password.png') }}" alt="Eye Icon" id="signin-eye-icon" onclick="togglePassword('signin')">
+                </div>
+                <button type="submit">Sign In</button>
+            </form>
+            <div id="signin-result"></div>
         </div>
     </div>
 </div>
@@ -311,7 +333,7 @@ body {
 
     function openSignup() {
         const modal = document.getElementById("signupModal");
-        const content = modal.querySelector(".modal-content");
+        const content = modal.querySelector(".signup-modal-content");
 
         modal.classList.remove("hide");
         content.classList.remove("hide");
@@ -320,7 +342,25 @@ body {
         content.classList.add("show");
 
         modal.style.display = "flex";
-        document.body.style.overflow = "hidden";
+        disableScroll();
+
+        document.body.classList.add("modal-open");
+
+    }
+
+
+    function openSignin() {
+        const modal = document.getElementById("signinModal");
+        const content = modal.querySelector(".signin-modal-content");
+
+        modal.classList.remove("hide");
+        content.classList.remove("hide");
+
+        modal.classList.add("show");
+        content.classList.add("show");
+
+        modal.style.display = "flex";
+        disableScroll();
 
         document.body.classList.add("modal-open");
 
@@ -328,7 +368,7 @@ body {
 
     function closeSignup() {
         const modal = document.getElementById("signupModal");
-        const content = modal.querySelector(".modal-content");
+        const content = modal.querySelector(".signup-modal-content");
 
         modal.classList.remove("show");
         content.classList.remove("show");
@@ -339,7 +379,24 @@ body {
         setTimeout(() => {
             modal.style.display = "none";
             document.body.classList.remove("modal-open");
-            document.body.style.overflow = "";
+            enableScroll();
+        }, 300);
+    }
+
+    function closeSignin() {
+        const modal = document.getElementById("signinModal");
+        const content = modal.querySelector(".signin-modal-content");
+
+        modal.classList.remove("show");
+        content.classList.remove("show");
+
+        modal.classList.add("hide");
+        content.classList.add("hide");
+
+        setTimeout(() => {
+            modal.style.display = "none";
+            document.body.classList.remove("modal-open");
+            enableScroll();
         }, 300);
     }
 
@@ -347,6 +404,7 @@ body {
     document.addEventListener("keydown", function(e) {
         if (e.key === "Escape") {
             closeSignup();
+            closeSignin();
         }
     });
 
@@ -372,9 +430,9 @@ body {
         });
 
 
-        function togglePassword() {
-            const passwordInput = document.getElementById("signup-password");
-            const eyeIcon = document.getElementById("closed-eye-icon");
+        function togglePassword(mode) {
+            const passwordInput = document.getElementById(`${mode}-password`);
+            const eyeIcon = document.getElementById(`${mode}-eye-icon`);
 
             if (passwordInput.type === "password") {
                 passwordInput.type = "text";
@@ -384,6 +442,41 @@ body {
                 eyeIcon.src = "{{ url_for('static', filename='icons/closed-eye-for-password.png') }}";
             }
         }
+
+
+            // signin handler
+    document.getElementById("signin-form").addEventListener("submit", async function(e) {
+        e.preventDefault();
+        const res = await fetch("/signin", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                username: document.getElementById("signin-username").value,
+                password: document.getElementById("signin-password").value
+            })
+        });
+        const result = await res.json();
+
+        if (result.message === "Signin successful") {
+            window.location.href = "/chat";
+        } else {
+            document.getElementById("signin-result").innerText = result.error || "Signin failed";
+        }
+    });
+
+
+
+    function disableScroll() {
+        const scrollBarWidth = window.innerWidth - document.documentElement.clientWidth;
+        document.body.style.overflow = "hidden";
+        document.body.style.paddingRight = scrollBarWidth + "px";
+    }
+
+    function enableScroll() {
+        document.body.style.overflow = "";
+        document.body.style.paddingRight = "";
+    }
+
 </script>
 
 

@@ -43,12 +43,10 @@ def signup():
         return jsonify({"error": str(e)}), 500
 
 
-@app.route('/login', methods=['GET', 'POST'])
-def login():
-    if request.method == 'GET':
-        return render_template('login.html')
+@app.route('/signin', methods=['GET', 'POST'])
+def signin():
     data = request.json
-    print("[LOGIN] Data received:", data)
+    print("[SIGNIN] Data received:", data)
     username = data.get("username")
     password = data.get("password")
 
@@ -56,10 +54,10 @@ def login():
     if user:
         session['username'] = username
         session['user_id'] = user.user_id
-        print("[LOGIN] success for:", username)
-        return jsonify({"message": "Login successful", "user id": user.user_id}), 200
+        print("[SIGNIN] success for:", username)
+        return jsonify({"message": "Signin successful", "user id": user.user_id}), 200
     else:
-        print("[LOGIN] Failed for:", username)
+        print("[SignIN] Failed for:", username)
         return jsonify({"error": "Invalid credentials"}), 401
 
 def open_browser():
@@ -103,7 +101,7 @@ def profile_pic():
     username = session.get('username')
 
     if not user_id:
-        return redirect('/login')
+        return redirect('/index')
 
     if request.method == 'POST':
         image_choice = request.form.get('image_choice')
@@ -156,7 +154,7 @@ def chat():
     profile_picture = session.get('profile_picture') or 'default_profile_pictures/profile_pic1.png'
     
     if not username:
-        return redirect('/login')
+        return redirect('/index')
     return render_template('chat.html', username=username, user_id=user_id, profile_picture=profile_picture)
 
 @app.route('/about')
@@ -180,7 +178,7 @@ def contact():
 def my_groups():
     user_id = session.get('user_id')
     if not user_id:
-        return redirect('/login')
+        return redirect('/index')
     groups = get_user_groups(user_id)
     print(f"Groups: {groups}")
     return jsonify(groups)

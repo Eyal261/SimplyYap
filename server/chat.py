@@ -1,5 +1,7 @@
 from db.models import Message
 from db.db_connection import get_db_connection
+from datetime import timezone
+
 
 
 def save_message(sender_id: int, content: str, group_id: int = None, recipient_id: int = None, message_type: str = None, file_name: str = None):
@@ -14,6 +16,9 @@ def save_message(sender_id: int, content: str, group_id: int = None, recipient_i
     conn.close()
     return message_id
 
+
+
+from datetime import timezone
 
 def get_messages_for_group(group_id: int):
     conn = get_db_connection()
@@ -33,9 +38,19 @@ def get_messages_for_group(group_id: int):
         ORDER BY m.timestamp ASC
     """, (group_id,))
     
-    messages = cursor.fetchall()
+    raw_messages = cursor.fetchall()
     conn.close()
+
+    messages = []
+    for msg in raw_messages:
+        timestamp = msg['timestamp']
+        if timestamp and timestamp.tzinfo is None:
+            timestamp = timestamp.replace(tzinfo=timezone.utc)
+        msg['timestamp'] = timestamp.isoformat()
+        messages.append(msg)
+
     return messages
+
 
 
 

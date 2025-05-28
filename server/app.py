@@ -9,6 +9,7 @@ import os
 from werkzeug.utils import secure_filename
 import time
 from mailer import send_contact_mail
+from security import contains_html_or_js
 
 
 app = Flask(__name__)
@@ -17,6 +18,8 @@ socketio = SocketIO(app)
 basedir = os.path.abspath(os.path.dirname(__file__))
 app.config['FILE_UPLOAD_FOLDER'] = os.path.join(basedir, 'static', 'files')
 os.makedirs(app.config['FILE_UPLOAD_FOLDER'], exist_ok=True)
+ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif', 'pdf', 'docx', 'txt', 'mp3', 'mp4'} #types of files allowed to upload
+
 
 @app.route('/')
 def index():
@@ -31,8 +34,9 @@ def signup():
     password = data.get("password")
     email = data.get("email")
 
-    if not username or not password or not email:
+    if not username or not password or not email or contains_html_or_js(username) or contains_html_or_js(password) or contains_html_or_js(email):
         return jsonify({"error": "Missing username or password or email"}), 400
+    
     
     try:
         user_id = create_user(username, password, email)
@@ -49,6 +53,9 @@ def signin():
     print("[SIGNIN] Data received:", data)
     username = data.get("username")
     password = data.get("password")
+
+    if not username or not password or contains_html_or_js(username) or contains_html_or_js(password):
+        return jsonify({"error": "Missing username or password"}), 400
 
     user = verify_password(username, password)
     if user:
@@ -77,8 +84,15 @@ def handle_group_data(data):
     print("[SocketIO] Message received:", data)
     group_id = data.get('group')
 
+
+
     # Save the message to the database
     message_content = data.get('text') or data.get('content') # Use 'text' for text messages, 'content' for file/image
+
+    if not message_content or contains_html_or_js(message_content):
+        print("[SocketIO] Invalid message content detected, ignoring message.")
+        return  # Do not emit or save
+
     message_id = save_message(
         sender_id=data.get('user_id'),
         content=message_content,
@@ -111,7 +125,7 @@ def profile_pic():
 
         elif image_choice == 'upload' and 'custom_image' in request.files:
             file = request.files['custom_image']
-            if file and file.filename.strip() != '':
+            if file and file.filename.strip() != '' and not contains_html_or_js(file.filename):
                 filename = secure_filename(file.filename)
                 timestamp = int(time.time())
                 unique_filename = f"user_{user_id}_{timestamp}_{filename}"
@@ -188,6 +202,8 @@ def api_create_group():
     data = request.json
     group_name = data.get('group_name')
     creator_id = session.get('user_id')
+    if contains_html_or_js(group_name):
+        return jsonify({"error": "Invalid group name"}), 400
     print(f"Creating group: {group_name} with creator id: {creator_id}")
     if not group_name or not creator_id:
         return jsonify({"error": "Missing group name or user id"}), 400
@@ -216,6 +232,9 @@ def join_group():
 
     if not group_code or not user_id:
         return jsonify({"error": "Missing group code or user id"}), 400
+    
+    if contains_html_or_js(group_code):
+        return jsonify({"error": "Invalid group code"}), 400
 
     group = get_group_by_group_code(group_code)
     print("-----------------------------------------------------")
@@ -249,31 +268,38 @@ def leave_group():
     return jsonify({"message": "Deleted group successfully"})
 
 
+def allowed_file(filename):
+    return '.' in filename and \
+           filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+
+
+
 @app.route('/upload_file', methods=['POST'])
 def upload_file():
     file = request.files.get('file')
-    if file:
-        filename = secure_filename(file.filename)
-        group_id = request.args.get('group_id') or "common"
+    if not file or not allowed_file(file.filename):
+        return jsonify({'error': 'Invalid or missing file'}), 400
 
-        # Use timestamp to avoid overwrites
-        timestamp = int(time.time())
-        name, ext = os.path.splitext(filename)
-        new_filename = f"{name}_{timestamp}{ext}"
+    filename = secure_filename(file.filename)
+    group_id = request.args.get('group_id') or "common"
 
-        group_folder = os.path.join(app.config['FILE_UPLOAD_FOLDER'], str(group_id))
-        os.makedirs(group_folder, exist_ok=True)
+    # Use timestamp to avoid overwrites
+    timestamp = int(time.time())
+    name, ext = os.path.splitext(filename)
+    new_filename = f"{name}_{timestamp}{ext}"
 
-        file_path = os.path.join(group_folder, new_filename)
-        file.save(file_path)
+    group_folder = os.path.join(app.config['FILE_UPLOAD_FOLDER'], str(group_id))
+    os.makedirs(group_folder, exist_ok=True)
 
-        file_url = f"/static/files/{group_id}/{new_filename}"
-        return jsonify({
-            'file_url': file_url,
-            'file_name': file.filename
-            }), 200
+    file_path = os.path.join(group_folder, new_filename)
+    file.save(file_path)
 
-    return jsonify({'error': 'No file part'}), 400
+    file_url = f"/static/files/{group_id}/{new_filename}"
+    return jsonify({
+        'file_url': file_url,
+        'file_name': file.filename
+        }), 200
+
 
 
 @app.route('/return_all_group_members', methods=['POST'])

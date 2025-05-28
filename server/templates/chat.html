@@ -648,7 +648,6 @@
     const timeString = timestamp.toLocaleTimeString([], {
         hour: '2-digit',
         minute: '2-digit',
-        timeZone: 'UTC'
     }) || timestamp.toString();
 
     const senderName = data.sender || `User ${data.user_id}`;

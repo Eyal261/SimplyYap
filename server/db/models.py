@@ -14,10 +14,11 @@ class User:
     
 
 class Group:
-    def __init__(self, group_id: int, group_name: str, creator_id: int, created_at: datetime):
+    def __init__(self, group_id: int, group_name: str, creator_id: int,group_code: str, created_at: datetime):
         self.group_id = group_id
         self.group_name = group_name
         self.creator_id = creator_id
+        self.group_code = group_code  # Unique code for the group
         self.created_at = created_at
         
 
@@ -37,4 +38,4 @@ class Message:
         self.recipient_id = recipient_id
         self.timestamp = timestamp
         self.message_type = message_type
-        self.file_name = file_name # <== 🔥 Fix file name
+        self.file_name = file_name 

@@ -40,7 +40,7 @@ def update_user_profile_picture(user_id: int, image_path: str):
     conn = get_db_connection()
     cursor = conn.cursor()
     cursor.execute(
-        "UPDATE users SET profile_image = %s WHERE user_id = %s",
+        "UPDATE users SET profile_picture = %s WHERE user_id = %s",
         (image_path, user_id)
     )
     conn.commit()

@@ -350,25 +350,28 @@
   transition: all 0.2s ease-in-out;
 }
 
-#groupCreateButton {
+#groupCreateButton, #groupJoinButton {
   background-color: #5b7cff;
   color: white;
   box-shadow: 0 4px 8px rgba(91, 124, 255, 0.4);
 }
 
-#groupCreateButton:hover {
+#groupCreateButton:hover, #groupJoinButton:hover {
   background-color: #4664e4;
 }
 
-#groupCacelButton {
+#groupCreateCancelButton, #groupJoinCancelButton {
   background-color: #f0f0f0;
   color: #333;
 }
 
-#groupCacelButton:hover {
+#groupCreateCancelButton:hover, #groupJoinCancelButton:hover {
   background-color: #e0e0e0;
 }
 
+#group_tag {
+  display: none;
+}
     
 </style>
 <div id="chat-container">
@@ -408,7 +411,8 @@
     <!-- Chat Area -->
     <div id="chat-area">
       <div id="group_tag">
-        <h1 id="group_name"></h1>
+        <h2 id="group_name" style="word-break: break-word;"></h2>
+        <p id="group_code_tag" style="color: #555; font-size: 14px;"></p>
         <button id="leave_group" onclick="leaveGroup()">Leave Group</button>
         <button id="delete_group" onclick="deleteGroup()">Delete Group</button>
         <button id="make_admin">Make Admin</button>
@@ -450,17 +454,29 @@
 
 
   <!-- Group Creation Modal -->
-<div id="groupModal" class="modal">
+<div id="createGroupModal" class="modal">
   <div class="modal-content">
     <h2>Create a New Group</h2>
     <input type="text" id="groupNameInput" placeholder="Enter group name">
     <div class="modal-buttons">
       <button onclick="submitGroupName()" id="groupCreateButton">Create</button>
-      <button onclick="closeGroupModal()" id="groupCacelButton">Cancel</button>
+      <button onclick="closeCreateGroupModal()" id="groupCreateCancelButton">Cancel</button>
     </div>
   </div>
 </div>
 
+
+<!-- Join Group Modal-->
+ <div id="joinGroupModal" class="modal">
+  <div class="modal-content">
+    <h2>Join a Group</h2>
+    <input type="text" id="groupCodeInput" placeholder="Enter group code">
+    <div class="modal-buttons">
+      <button onclick="submitGroupCode()" id="groupJoinButton">Join</button>
+      <button onclick="closeJoinGroupModal()" id="groupJoinCancelButton">Cancel</button>
+    </div>
+  </div>
+</div>
   
 
 
@@ -545,16 +561,17 @@
         groupList.innerHTML = '';
 
         groups.forEach(group => {
-            const groupId = group[0];       // assuming tuple: [group_id, group_name, created_at]
+            const groupId = group[0];       // assuming tuple: [group_id, group_name, creator_id, group_code, created_at]
             const groupName = group[1];
+            const groupCode = group[3];
 
             // Add to sidebar
             const li = document.createElement('li');
             li.textContent = groupName;
-            li.onclick = () => joinGroupSocket(groupId, groupName);
+            li.onclick = () => joinGroupSocket(groupId, groupName, groupCode);
             groupList.appendChild(li);
 
-            // 🔥 Join each group socket room
+            // Join each group socket room
             socket.emit('join_group', groupId);
         });
     });
@@ -568,12 +585,15 @@
         }
     });
 
-    function joinGroupSocket(groupId, groupName){
+    function joinGroupSocket(groupId, groupName, groupCode){
         currentGroup = groupId;
         document.getElementById("group_name").textContent = groupName;
+        document.getElementById("group_code_tag").textContent = groupCode
         document.getElementById("group_tag").classList.add("show-buttons");
         socket.emit('join_group_socket', groupId);
         document.getElementById("chat").innerHTML = ""; // clear messages
+        document.getElementById("group_tag").style.display = "block";
+
 
         fetch(`/messages/${groupId}`)  
         .then(res => res.json())
@@ -582,33 +602,36 @@
         });
     }
 
-    function joinGroup(){
-        const groupId = prompt("Enter group id:");
-        if (!groupId) return;
+    function submitGroupCode() {
+        const groupCode = document.getElementById('groupCodeInput').value.trim();
+        if (!groupCode) {
+            alert("Group code cannot be empty");
+            return;
+        }
+
         fetch('/join_group', {
             method: 'POST',
-            headers: {"Content-Type": "application/json"},
-            body: JSON.stringify({group_id: parseInt(groupId)})
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ group_code: groupCode })
         })
-        .then(res => {
-            if (!res.ok) {
-                throw new Error('Network response was not ok');
-            }
-            return res.json();
-        })
-        .then(data => {
-            if (data.message === "Joined group successfully") {
+        .then(res => res.json().then(data => ({ ok: res.ok, data })))
+        .then(({ ok, data }) => {
+            if (ok && data.message === "Joined group successfully") {
                 alert("Successfully joined group!");
                 loadGroups();
-            } else if (data.error) {
-                alert("Error: " + data.error);
+                closeJoinGroupModal();
+            } else {
+                alert("Error: " + (data.error || "Unknown error occurred"));
             }
         })
         .catch(error => {
             console.error('Error:', error);
-            alert("Failed to join group. Please try again." + error);
+            alert("Failed to join group. Please try again.\n" + error.message);
         });
     }
+
+
+
 
 
     function renderMessage(data) {
@@ -669,17 +692,34 @@
 }
 
 
-
+    document.addEventListener('keydown', function(event) {  // Close modals of create and join groups on Escape key
+      if (event.key === "Escape") {
+        closeCreateGroupModal();
+        closeJoinGroupModal();
+      }
+    });
 
     function createGroup() {
-      document.getElementById('groupModal').style.display = 'block';
+      document.getElementById('createGroupModal').style.display = 'block';
       document.body.style.overflow = 'hidden'; // Prevent background scrolling
       document.getElementById('groupNameInput').value = ''; //clear previous input
       document.getElementById('groupNameInput').focus();
     }
 
-    function closeGroupModal() {
-      document.getElementById('groupModal').style.display = 'none';
+    function joinGroup() {
+      document.getElementById('joinGroupModal').style.display = 'block';
+      document.body.style.overflow = 'hidden'; // Prevent background scrolling
+      document.getElementById('groupCodeInput').value = ''; //clear previous input
+      document.getElementById('groupCodeInput').focus();
+    }
+
+    function closeCreateGroupModal() {
+      document.getElementById('createGroupModal').style.display = 'none';
+      document.body.style.overflow = 'auto'; // Re-enable background scrolling
+    }
+
+    function closeJoinGroupModal() {
+      document.getElementById('joinGroupModal').style.display = 'none';
       document.body.style.overflow = 'auto'; // Re-enable background scrolling
     }
 
@@ -700,7 +740,7 @@
           if (data.group_id) {
               alert("Group created successfully");
               loadGroups();
-              closeGroupModal();
+              closeCreateGroupModal();
           } else {
               alert("Failed: " + data.error);
           }
@@ -712,11 +752,18 @@
 
     // Click outside modal-content closes the modal
     window.addEventListener('click', function(event) {
-      const modal = document.getElementById('groupModal');
+      const modal = document.getElementById('createGroupModal');
       if (event.target === modal) {
-        closeGroupModal();
+        closeCreateGroupModal();
       }
     });
+
+    window.addEventListener('click', function(event) {
+      const modal = document.getElementById('joinGroupModal');
+      if (event.target === modal) {
+        closeJoinGroupModal();
+      }
+    })
 
 
 

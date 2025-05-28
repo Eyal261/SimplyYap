@@ -1,4 +1,5 @@
 
+
 -- users
 CREATE TABLE users (
     user_id INT AUTO_INCREMENT PRIMARY KEY,
@@ -14,6 +15,7 @@ CREATE TABLE chat_groups (
     group_id INT AUTO_INCREMENT PRIMARY KEY,
     group_name VARCHAR(100) NOT NULL,
     creator_id INT,
+    group_code VARCHAR(20) UNIQUE,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (creator_id) REFERENCES users(user_id)
 );

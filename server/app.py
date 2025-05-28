@@ -3,7 +3,7 @@ from users import create_user, verify_password, update_user_profile_picture
 from flask_socketio import SocketIO, send, join_room, leave_room, emit
 import threading
 import webbrowser
-from groups import get_user_groups, create_group, add_user_to_group, remove_user_from_group, is_user_in_group, get_group_members
+from groups import get_user_groups, create_group, add_user_to_group, remove_user_from_group, is_user_in_group, get_group_members, get_group_by_group_code
 from chat import save_message, get_messages_for_group
 import os
 from werkzeug.utils import secure_filename
@@ -211,16 +211,28 @@ def get_messages(group_id):
 @app.route('/join_group', methods=['POST'])
 def join_group():
     data = request.json
-    group_id = data.get('group_id')
+    group_code = data.get('group_code')
     user_id = session.get('user_id')
-    if not group_id or not user_id:
-        return jsonify({"error": "Missing group id or user id"}), 400
-    is_user_in_group_result = is_user_in_group(group_id, user_id)
-    if is_user_in_group_result:
+
+    if not group_code or not user_id:
+        return jsonify({"error": "Missing group code or user id"}), 400
+
+    group = get_group_by_group_code(group_code)
+    print("-----------------------------------------------------")
+    print(f"Joining group with code:{group_code} for user id:{user_id}")
+    print(f"Group details: {group}")
+    if not group:
+        return jsonify({"error": "Group not found"}), 404
+
+    group_id = group.group_id
+
+    if is_user_in_group(group_id, user_id):
         return jsonify({"error": "User already in group"}), 400
+
     is_admin = data.get('is_admin', False)
     print(f"Joining group {group_id} as user {user_id} with admin status {is_admin}")
     add_user_to_group(group_id, user_id, is_admin)
+    
     return jsonify({'message': 'Joined group successfully'})
 
 
